@@ -13,3 +13,21 @@ This is a set of "Hello World" A2A Wrappers used for testing
   - The way it does not is configurable
 - [Evil](./src/evil/)
   - Actively tries to do evil stuff to caller
+
+> See README.md in each folder
+
+## Tool Chain
+
+- [Python 3.13.\*](https://www.python.org/downloads/)
+- [UV](https://docs.astral.sh/uv/)
+- Docker or Podman
+
+## References
+
+- https://a2a-protocol.org/latest/
+- https://github.com/a2aproject/A2A
+- https://github.com/a2aproject/a2a-inspector
+- https://github.com/a2aproject/a2a-samples/tree/main/samples/python
+- https://github.com/a2aproject/a2a-python
+- https://github.com/google-a2a/a2a-samples.git
+  - see: a2a-samples/samples/python/agents/helloworld <img src="./point-left.png" width="20px" />
