@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9340e136-83dd-461a-8b2e-54af29aa132c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/good/a2a-server/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/good/a2a_server/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/good/a2a-server-tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/good/a2a_server_tests/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/good/a2a-server-tests/test_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/good/a2a_server_tests/test_app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/good/a2a_server/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/good/a2a_server/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +70,7 @@
       <workItem from="1761664502048" duration="92000" />
       <workItem from="1761664613632" duration="4000" />
       <workItem from="1761664646858" duration="49000" />
-      <workItem from="1761664710658" duration="4117000" />
+      <workItem from="1761664710658" duration="5194000" />
     </task>
     <servers />
   </component>
