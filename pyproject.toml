@@ -1,0 +1,32 @@
+[project]
+name = "a2a-empty"
+version = "0.1.0"
+description = "A a2a wrapper"
+authors = [{name = "artivsolito"}]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi (>=0.110.0,<1.0.0)",
+    "uvicorn (>=0.29.0,<1.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [
+    { include = "good", from = "src" },
+    { include = "bad", from = "src" },
+    { include = "evil", from = "src" }
+]
+
+[dependency-groups]
+dev = [
+    "pytest (>=8.4.2,<9.0.0)",
+    "black (>=25.9.0,<26.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "isort (>=7.0.0,<8.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
+]
