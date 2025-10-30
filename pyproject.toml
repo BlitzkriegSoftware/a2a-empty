@@ -7,6 +7,25 @@ requires-python = ">=3.13"
 dependencies = ["requests>=0"]
 
 [dependency-groups]
-lint = ["ruff>=0", "black>=0"]
-test = ["pytest>=0"]
-dev  = ["ruff>=0", "black>=0", "pytest>=0"]
+lint = ["ruff>=0", "black>=0", "isort>=0"]
+hooks = ["pre-commit>=0"]
+typecheck = ["pyright>=0"]
+dev = ["ruff>=0", "black>=0", "isort>=0", "pytest>=0", "pre-commit>=0", "pyright>=0"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+skip-string-normalization = false
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "I", "B", "UP", "RUF"]
+ignore = ["E501"]
+fix = true
