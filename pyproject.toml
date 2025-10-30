@@ -1,0 +1,12 @@
+[project]
+name = "a2a-empty"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["requests>=0"]
+
+[dependency-groups]
+lint = ["ruff>=0", "black>=0"]
+test = ["pytest>=0"]
+dev  = ["ruff>=0", "black>=0", "pytest>=0"]
