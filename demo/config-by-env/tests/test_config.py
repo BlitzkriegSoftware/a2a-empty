@@ -88,6 +88,12 @@ def test_config_getter_1(rule_json):
      assert key_list is not None
      config = ConfigByEnv(rule_json)
      assert config is not None
+     key = key_list[0]
+     value = config.config_get(key)
+     assert value is not None
      key = key_list[1]
+     value = config.config_get(key)
+     assert value is not None
+     key = key_list[2]
      value = config.config_get(key)
      assert value is not None
