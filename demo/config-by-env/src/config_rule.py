@@ -5,7 +5,8 @@ class ConfigurationRule:
             vregex = None, 
             required: bool = False, 
             min = None, 
-            max = None
+            max = None,
+            vdefault = None
         ):
             instance = super().__new__(cls)
             instance.name = name
@@ -14,6 +15,7 @@ class ConfigurationRule:
             instance.required = required
             instance.min = min
             instance.max = max
+            instance.vdefault = vdefault
             return instance
 
     def ___init___(
@@ -23,7 +25,8 @@ class ConfigurationRule:
             vregex = None, 
             required: bool = False, 
             min = None, 
-            max = None
+            max = None,
+            vdefault = None
         ):
         self.name = name
         self.vtype = vtype
@@ -31,6 +34,7 @@ class ConfigurationRule:
         self.required = required
         self.min = min
         self.max = max
+        self.vdefault  = vdefault
 
     @classmethod
     def from_Args (
@@ -40,7 +44,8 @@ class ConfigurationRule:
             vregex = None, 
             required: bool = False, 
             min = None, 
-            max = None
+            max = None,
+            vdefault = None
         ) :
         cr = ConfigurationRule(name)
         cr.vtype = vtype
@@ -48,4 +53,5 @@ class ConfigurationRule:
         cr.required = required
         cr.min = min
         cr.max = max
+        cr.vdefault = vdefault
         return cr

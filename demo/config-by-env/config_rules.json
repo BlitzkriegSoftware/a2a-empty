@@ -5,7 +5,8 @@
     "required": true,
     "regex": "([a-z][A-Z][0-9]-_.)*",
     "min": "",
-    "max": ""
+    "max": "",
+    "default": ""
   },
   {
     "name": "key2",
@@ -13,7 +14,8 @@
     "required": true,
     "regex": "",
     "min": "1",
-    "max": "99"
+    "max": "99",
+    "default": ""
   },
   {
     "name": "key3",
@@ -21,6 +23,7 @@
     "required": false,
     "regex": "",
     "min": "0",
-    "max": "999"
+    "max": "999",
+    "default": "400"
   }
 ]

@@ -82,32 +82,41 @@ class ConfigByEnv:
     def config_get(self, key: str, default_value = None):
         if key in self.config_rules:
             vtype = self.config_rules[key].vtype
+            fallback = self.config_rules[key].vdefault
+            svalue = os.environ[key].strip()
+            required = self.config_rules[key].required
+
             match vtype:
                 case "int":
-                    return self.config_get_int(key)
+                    if len(svalue) < 1:
+                        if(default_value is not None):
+                            return int(default_value)
+                        elif(not required) and len(fallback) > 0:
+                            return int(fallback)
+                        else:
+                            return 0
+                    else:
+                        ivalue = int(svalue)
+                        return ivalue
+
                 case "float":
-                    return self.config_get_float(key)
+                    if len(svalue) < 1:
+                        if(default_value is not None):
+                            return float(default_value)
+                        elif(not required) and len(fallback) > 0:
+                            return float(fallback)
+                        else:
+                            return 0.0
+                    else:
+                        fvalue = float(svalue)
+                        return fvalue
+
                 case _:
-                    return self.config_get_string(key)
+                    if len(svalue) < 1:
+                        if(default_value is not None):
+                            return default_value
+                        if(not required):
+                            return fallback
+                        return svalue
         else:
             return None
-
-    def config_get_string(self, key: str, default_value: str = "") -> str:
-        if key in self.key_values:
-            return self.key_values[key]
-        else:
-            return default_value
-    
-    def config_get_int(self, key: str, default_value: int = 0) -> int:
-        if key in self.key_values:
-            return int(self.key_values[key])
-        else:
-            return default_value
-
-    def config_get_float(self, key: str, default_value: float = 0.0) -> float:
-        if key in self.key_values:
-            return float(self.key_values[key])
-        else:
-            return default_value
-        
-    
