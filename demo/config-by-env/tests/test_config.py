@@ -1,10 +1,20 @@
 # Tests
-import os
 import json
+import os
 import random
+import string
 import pytest
-from ..src import ConfigByEnv
-from . import generate_random_string
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
+
+from src.config_by_env import ConfigByEnv
+
+def generate_random_string(length):
+    """Generates a random string of specified length containing letters and digits."""
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choices(characters, k=length))
+    return random_string
 
 def write_up(rule_json) -> list:
     key_list = []
@@ -30,7 +40,8 @@ def write_up(rule_json) -> list:
 
 @pytest.fixture
 def rule_json():
-     with open('./config-rules.json', 'r') as file:
+     json_file_folder = os.path.join(os.path.dirname(__file__), '..')
+     with open(os.path.join(json_file_folder,'config_rules.json'), 'r') as file:
           rules = json.load(file)
           return rules
 

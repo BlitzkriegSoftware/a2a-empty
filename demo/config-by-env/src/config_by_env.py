@@ -1,6 +1,7 @@
 import os
 import re
-from . import ConfigurationRule
+
+from config_rule import ConfigurationRule
 
 """
 Requires environment variables to be set
@@ -31,7 +32,7 @@ class ConfigByEnv:
             max = item.max
             if(len(max) < 1):
                 max = None
-            cfg = ConfigurationRule(name, vtype, vregex, required, min, max)
+            cfg = ConfigurationRule.static_factory(name, vtype, vregex, required, min, max)
             rules[name] = cfg
         
         return rules
