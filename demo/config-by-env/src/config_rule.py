@@ -16,21 +16,21 @@ class ConfigurationRule:
         self.min = min
         self.max = max
 
-    @staticmethod
-    def static_factory(
+    @classmethod
+    def from_Args (
+            cls,
             name: str, 
             vtype: str = "str", 
             vregex = None, 
             required: bool = False, 
             min = None, 
             max = None
-        ):
-        cr = ConfigurationRule(
-            name,
-            vtype,
-            vregex,
-            required,
-            min,
-            max
-        )
+        ) :
+        cr = ConfigurationRule()
+        cr.name = name
+        cr.vtype = vtype
+        cr.vregex = vregex
+        cr.required = required
+        cr.min = min
+        cr.max = max
         return cr

@@ -16,23 +16,23 @@ class ConfigByEnv:
     def config_transform(config_rules_json):
         rules= {}
         for item in config_rules_json:
-            name = item.name
+            name = item['name']
             if(len(name) < 1):
                 raise ValueError("Name is a required field")
-            vtype = item.type
+            vtype = item['type']
             if(len(vtype) < 1):
                 vtype = "str"
-            vregex = item.regex
+            vregex = item['regex']
             if(len(vregex) < 1):
                 vregex = None
-            required = bool(item.required)
-            min = item.min
+            required = bool(item['required'])
+            min = item['min']
             if(len(min) < 1): 
                 min = None
-            max = item.max
+            max = item['max']
             if(len(max) < 1):
                 max = None
-            cfg = ConfigurationRule.static_factory(name, vtype, vregex, required, min, max)
+            cfg = ConfigurationRule.from_Args(name, vtype, vregex, required, min, max)
             rules[name] = cfg
         
         return rules

@@ -12,16 +12,16 @@ from src.config_by_env import ConfigByEnv
 
 def generate_random_string(length):
     """Generates a random string of specified length containing letters and digits."""
-    characters = string.ascii_letters + string.digits
+    characters = string.ascii_lowercase + string.digits
     random_string = ''.join(random.choices(characters, k=length))
     return random_string
 
-def write_up(rule_json) -> list:
+def make_env_vars(rule_json) -> list:
     key_list = []
     for item in rule_json:
-            key = item.name
+            key = item['name']
             value = ""
-            vtype = item.type
+            vtype = item['type']
             match vtype:
                 case "int":
                     value = str(random.randint(1,10))
@@ -47,7 +47,16 @@ def rule_json():
 
 @pytest.mark.unit
 def test_write_up(rule_json):
-    key_list = write_up(rule_json)
+    key_list = make_env_vars(rule_json)
     for key in key_list:
          value= os.environ[key]
          assert value is not None
+
+@pytest.mark.unit
+def test_validate_config(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    rules = ConfigByEnv.config_transform(rule_json)
+    assert rules is not None
+    nv = ConfigByEnv.config_validate(rules)
+    assert nv is not None

@@ -1,9 +1,9 @@
 [
   {
     "name": "key1",
-    "type": "string",
+    "type": "str",
     "required": true,
-    "regex": "[A-Z][a-z][0-9].-",
+    "regex": "([a-z][A-Z][0-9]-_.)*",
     "min": "",
     "max": ""
   },
