@@ -41,7 +41,11 @@ class ConfigByEnv:
     def config_validate(config_rules : dict):
         key_values = {}
         for key, rule in config_rules.items():
-            value = os.environ[key]
+
+            value = os.environ.get(key)
+            if(value is None):
+                value = ""
+            value = value.strip()
             
             if(len(value) < 1 and rule.required):
                 raise ValueError(f"{key} must have a value")
@@ -52,6 +56,18 @@ class ConfigByEnv:
                     raise ValueError(f"{key} does not validate to regex {rule.vregex}")
             
             match rule.vtype:
+                
+                case "date":
+                    dvalue = datetime.strptime(value, ConfigByEnv.DATE_FORMAT)
+                    if(rule.min is not None):
+                        lbound = datetime.strptime(rule.min, ConfigByEnv.DATE_FORMAT)
+                        if(dvalue < lbound):
+                            raise ValueError(f"{key}, int value {dvalue} must be greater than {lbound}")
+                    if(rule.max is not None):
+                        ubound = datetime.strptime(rule.max, ConfigByEnv.DATE_FORMAT)
+                        if(dvalue > ubound):
+                            raise ValueError(f"{key}, int value {dvalue} must be less than {ubound}")
+
                 case "int":
                     ivalue = int(value)
                     if(rule.min is not None):
@@ -86,10 +102,26 @@ class ConfigByEnv:
         if key in self.config_rules:
             vtype = self.config_rules[key].vtype
             fallback = self.config_rules[key].vdefault
-            svalue = os.environ[key].strip()
             required = self.config_rules[key].required
+            
+            svalue = os.environ.get(key)
+            if(svalue is None):
+                svalue = ""
+            svalue = svalue.strip()
 
             match vtype:
+                
+                case "date":
+                    if len(svalue) < 1:
+                        if(default_value is not None):
+                            return datetime.strptime(default_value, ConfigByEnv.DATE_FORMAT)
+                        elif(not required) and len(fallback) > 0:
+                            return datetime.strptime(fallback, ConfigByEnv.DATE_FORMAT)
+                        else:
+                            return None
+                    else:
+                        return datetime.strptime(svalue, ConfigByEnv.DATE_FORMAT)
+                                    
                 case "int":
                     if len(svalue) < 1:
                         if(default_value is not None):
@@ -113,18 +145,7 @@ class ConfigByEnv:
                     else:
                         fvalue = float(svalue)
                         return fvalue
-                    
-                case "date":
-                    if len(svalue) < 1:
-                        if(default_value is not None):
-                            return datetime.strptime(default_value, ConfigByEnv.DATE_FORMAT)
-                        elif(not required) and len(fallback) > 0:
-                            return datetime.strptime(fallback, ConfigByEnv.DATE_FORMAT)
-                        else:
-                            return None
-                    else:
-                        return datetime.strptime(svalue, ConfigByEnv.DATE_FORMAT)
-                    
+    
                 case _:
                     if len(svalue) < 1:
                         if(default_value is not None):

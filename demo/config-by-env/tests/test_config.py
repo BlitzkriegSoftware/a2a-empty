@@ -61,7 +61,7 @@ def rule_json():
 def test_write_up(rule_json):
     key_list = make_env_vars(rule_json)
     for key in key_list:
-         value= os.environ[key]
+         value= os.environ.get(key)
          assert value is not None
 
 @pytest.mark.unit
@@ -107,3 +107,47 @@ def test_config_getter_1(rule_json):
      key = key_list[2]
      value = config.config_get(key)
      assert value is not None
+     key = key_list[3]
+     value = config.config_get(key)
+     assert value is not None
+
+@pytest.mark.unit
+def test_config_getter_2(rule_json):
+     key_list = make_env_vars(rule_json)
+     assert key_list is not None
+     config = ConfigByEnv(rule_json)
+     assert config is not None
+
+     key = "bad_1"
+     value = config.config_get(key)
+     assert value is None
+
+@pytest.mark.unit
+def test_config_getter_3(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    config = ConfigByEnv(rule_json)
+    assert config is not None
+
+    key = "bad_2"
+    dflt = "cool"
+    value = config.config_get(key, dflt)
+    assert value is None
+
+@pytest.mark.unit
+def test_config_getter_4(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    config = ConfigByEnv(rule_json)
+    assert config is not None
+
+    key = key_list[0]
+    os.environ.pop(key, None)
+
+    value = config.config_get(key)
+    assert value is None
+
+    dflt = "cool"
+    value = config.config_get(key, dflt)
+    assert value == dflt
+
