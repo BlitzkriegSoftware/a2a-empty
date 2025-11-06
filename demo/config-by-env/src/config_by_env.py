@@ -3,14 +3,11 @@ import re
 
 from config_rule import ConfigurationRule
 
-"""
-Requires environment variables to be set
-"""
 class ConfigByEnv:
-    def ___init___(self, config_rules_json):
+
+    def __init__(self, config_rules_json):
         self.config_rules = self.config_transform(config_rules_json)
         self.key_values = self.config_validate(self.config_rules)
-        pass
     
     @staticmethod
     def config_transform(config_rules_json):

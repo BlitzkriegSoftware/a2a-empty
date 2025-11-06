@@ -1,4 +1,20 @@
 class ConfigurationRule:
+    def __new__(cls,
+            name: str, 
+            vtype: str = "str", 
+            vregex = None, 
+            required: bool = False, 
+            min = None, 
+            max = None
+        ):
+            instance = super().__new__(cls)
+            instance.name = name
+            instance.vtype = vtype
+            instance.vregex = vregex
+            instance.required = required
+            instance.min = min
+            instance.max = max
+            return instance
 
     def ___init___(
             self, 
@@ -26,8 +42,7 @@ class ConfigurationRule:
             min = None, 
             max = None
         ) :
-        cr = ConfigurationRule()
-        cr.name = name
+        cr = ConfigurationRule(name)
         cr.vtype = vtype
         cr.vregex = vregex
         cr.required = required

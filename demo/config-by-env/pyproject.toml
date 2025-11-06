@@ -8,3 +8,8 @@ dependencies = [
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
 ]
+[tool.pytest.ini_options]
+markers = [
+    "unit: unit tests",
+    "smoke: subset of unit tests used for CI builds",
+]

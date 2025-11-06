@@ -6,6 +6,8 @@ import string
 import pytest
 import sys
 
+from src.config_rule import ConfigurationRule
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
 
 from src.config_by_env import ConfigByEnv
@@ -60,3 +62,32 @@ def test_validate_config(rule_json):
     assert rules is not None
     nv = ConfigByEnv.config_validate(rules)
     assert nv is not None
+
+@pytest.mark.unit
+def test_ConfigurationRule_ctor():
+    cr = ConfigurationRule(
+        "key",
+        "int",
+        "[0-9]*",
+        True,
+        0,
+        99
+    )
+    assert cr is not None
+
+@pytest.mark.unit
+def test_config_ctor(rule_json):
+     key_list = make_env_vars(rule_json)
+     assert key_list is not None
+     config = ConfigByEnv(rule_json)
+     assert config is not None
+
+@pytest.mark.unit
+def test_config_getter_1(rule_json):
+     key_list = make_env_vars(rule_json)
+     assert key_list is not None
+     config = ConfigByEnv(rule_json)
+     assert config is not None
+     key = key_list[1]
+     value = config.config_get(key)
+     assert value is not None
