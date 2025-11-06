@@ -25,5 +25,14 @@
     "min": "0",
     "max": "999",
     "default": "400"
+  },
+  {
+    "name": "key4",
+    "type": "date",
+    "required": false,
+    "regex": "d{4}-d{2}-d{2}",
+    "min": "",
+    "max": "",
+    "default": "2999-12-31"
   }
 ]

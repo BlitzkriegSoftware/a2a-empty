@@ -1,9 +1,12 @@
+from datetime import datetime
 import os
 import re
 
 from config_rule import ConfigurationRule
 
 class ConfigByEnv:
+
+    DATE_FORMAT = "%Y-%m-%d"
 
     def __init__(self, config_rules_json):
         self.config_rules = self.config_transform(config_rules_json)
@@ -110,7 +113,18 @@ class ConfigByEnv:
                     else:
                         fvalue = float(svalue)
                         return fvalue
-
+                    
+                case "date":
+                    if len(svalue) < 1:
+                        if(default_value is not None):
+                            return datetime.strptime(default_value, ConfigByEnv.DATE_FORMAT)
+                        elif(not required) and len(fallback) > 0:
+                            return datetime.strptime(fallback, ConfigByEnv.DATE_FORMAT)
+                        else:
+                            return None
+                    else:
+                        return datetime.strptime(svalue, ConfigByEnv.DATE_FORMAT)
+                    
                 case _:
                     if len(svalue) < 1:
                         if(default_value is not None):

@@ -5,7 +5,7 @@ import random
 import string
 import pytest
 import sys
-
+from datetime import date, timedelta
 from src.config_rule import ConfigurationRule
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
@@ -17,6 +17,13 @@ def generate_random_string(length):
     characters = string.ascii_lowercase + string.digits
     random_string = ''.join(random.choices(characters, k=length))
     return random_string
+
+
+def generate_random_date() -> date:
+    days_to_add = random.randint(10,100)
+    start_date = date.today()
+    new_date = start_date + timedelta(days=days_to_add) 
+    return new_date
 
 def make_env_vars(rule_json) -> list:
     key_list = []
@@ -30,7 +37,10 @@ def make_env_vars(rule_json) -> list:
 
                 case "float":
                     value = str(random.uniform(1,100))
-            
+                
+                case "date":
+                    value = generate_random_date().strftime("%Y-%m-%d")
+
                 case _:
                     sLen = random.randint(7,16)
                     value = generate_random_string(sLen)
