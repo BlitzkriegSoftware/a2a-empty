@@ -1,0 +1,47 @@
+[project]
+name = "a2a-empty"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=0",
+    "a2a-sdk>=0",
+    "click>=0",
+    "dotenv>=0",
+    "httpx>=0",
+    "pydantic>=0",
+    "python-dotenv>=0",
+    "sse-starlette>=0",
+    "starlette>=0",
+    "uvicorn>=0",
+    "fastapi>=0"
+]
+
+[dependency-groups]
+lint = ["ruff>=0", "black>=0", "isort>=0"]
+hooks = ["pre-commit>=0"]
+typecheck = ["pyright>=0"]
+dev = ["ruff>=0", "black>=0", "isort>=0", "pytest>=0", "pre-commit>=0", "pyright>=0"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+skip-string-normalization = false
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+fix = true
+
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+

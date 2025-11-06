@@ -1,0 +1,8 @@
+{
+  "typeCheckingMode": "strict",
+  "include": ["src", "tests"],
+  "extraPaths": ["src"],
+  "exclude": ["build", "dist", ".venv"],
+  "reportMissingImports": true,
+  "reportUnusedVariable": "warning"
+}
