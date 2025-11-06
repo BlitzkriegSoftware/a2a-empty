@@ -115,8 +115,9 @@ class ConfigByEnv:
                     if len(svalue) < 1:
                         if(default_value is not None):
                             return default_value
-                        if(not required):
+                        elif(not required):
                             return fallback
+                    else:
                         return svalue
         else:
             return None
