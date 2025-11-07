@@ -38,6 +38,10 @@ class ConfigByEnv:
         return rules
 
     @staticmethod
+    def to_date(value: str):
+        return datetime.strptime(value, ConfigByEnv.DATE_FORMAT)
+
+    @staticmethod
     def config_validate(config_rules : dict):
         key_values = {}
         for key, rule in config_rules.items():
@@ -115,7 +119,7 @@ class ConfigByEnv:
                     if len(svalue) < 1:
                         if(default_value is not None):
                             return datetime.strptime(default_value, ConfigByEnv.DATE_FORMAT)
-                        elif(not required) and len(fallback) > 0:
+                        elif(not required) and (fallback is not None) and len(fallback) > 0:
                             return datetime.strptime(fallback, ConfigByEnv.DATE_FORMAT)
                         else:
                             return None
@@ -126,7 +130,7 @@ class ConfigByEnv:
                     if len(svalue) < 1:
                         if(default_value is not None):
                             return int(default_value)
-                        elif(not required) and len(fallback) > 0:
+                        elif(not required) and (fallback is not None) and len(fallback) > 0:
                             return int(fallback)
                         else:
                             return 0
@@ -138,7 +142,7 @@ class ConfigByEnv:
                     if len(svalue) < 1:
                         if(default_value is not None):
                             return float(default_value)
-                        elif(not required) and len(fallback) > 0:
+                        elif(not required) and (fallback is not None) and len(fallback) > 0:
                             return float(fallback)
                         else:
                             return 0.0

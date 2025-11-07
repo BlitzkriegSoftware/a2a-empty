@@ -1,6 +1,6 @@
 [
   {
-    "name": "key1",
+    "name": "key_str_1",
     "type": "str",
     "required": true,
     "regex": "([a-z][A-Z][0-9]-_.)*",
@@ -9,7 +9,16 @@
     "default": ""
   },
   {
-    "name": "key2",
+    "name": "key_str_2",
+    "type": "str",
+    "required": true,
+    "regex": "([a-z][A-Z][0-9]-_.)*",
+    "min": "",
+    "max": "",
+    "default": "wow"
+  },
+  {
+    "name": "key_int_1",
     "type": "int",
     "required": true,
     "regex": "",
@@ -18,7 +27,7 @@
     "default": ""
   },
   {
-    "name": "key3",
+    "name": "key_float_1",
     "type": "float",
     "required": false,
     "regex": "",
@@ -27,7 +36,7 @@
     "default": "400"
   },
   {
-    "name": "key4",
+    "name": "key_date_1",
     "type": "date",
     "required": false,
     "regex": "\\d{4}-\\d{2}-\\d{2}",

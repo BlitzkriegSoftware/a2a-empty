@@ -93,26 +93,18 @@ def test_config_ctor(rule_json):
      assert config is not None
 
 @pytest.mark.unit
-def test_config_getter_1(rule_json):
-     key_list = make_env_vars(rule_json)
-     assert key_list is not None
-     config = ConfigByEnv(rule_json)
-     assert config is not None
-     key = key_list[0]
-     value = config.config_get(key)
-     assert value is not None
-     key = key_list[1]
-     value = config.config_get(key)
-     assert value is not None
-     key = key_list[2]
-     value = config.config_get(key)
-     assert value is not None
-     key = key_list[3]
-     value = config.config_get(key)
-     assert value is not None
+def test_config_getter_good(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    config = ConfigByEnv(rule_json)
+    assert config is not None
+
+    for key in key_list:
+        value = config.config_get(key)
+        assert value is not None
 
 @pytest.mark.unit
-def test_config_getter_2(rule_json):
+def test_config_getter_badkey(rule_json):
      key_list = make_env_vars(rule_json)
      assert key_list is not None
      config = ConfigByEnv(rule_json)
@@ -123,7 +115,7 @@ def test_config_getter_2(rule_json):
      assert value is None
 
 @pytest.mark.unit
-def test_config_getter_3(rule_json):
+def test_config_getter_404(rule_json):
     key_list = make_env_vars(rule_json)
     assert key_list is not None
     config = ConfigByEnv(rule_json)
@@ -135,13 +127,13 @@ def test_config_getter_3(rule_json):
     assert value is None
 
 @pytest.mark.unit
-def test_config_getter_4(rule_json):
+def test_config_getter_cleared_str(rule_json):
     key_list = make_env_vars(rule_json)
     assert key_list is not None
     config = ConfigByEnv(rule_json)
     assert config is not None
 
-    key = key_list[0]
+    key = "key_str_1"
     os.environ.pop(key, None)
 
     value = config.config_get(key)
@@ -151,3 +143,120 @@ def test_config_getter_4(rule_json):
     value = config.config_get(key, dflt)
     assert value == dflt
 
+@pytest.mark.unit
+def test_config_getter_cleared_int(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    config = ConfigByEnv(rule_json)
+    assert config is not None
+
+    key = "key_int_1"
+    os.environ.pop(key, None)
+
+    value = config.config_get(key)
+    assert value == 0
+
+    dflt = 9
+    value = config.config_get(key, dflt)
+    assert value == dflt
+
+
+@pytest.mark.unit
+def test_config_getter_cleared_date(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    config = ConfigByEnv(rule_json)
+    assert config is not None
+
+    key = "key_date_1"
+    os.environ.pop(key, None)
+
+    value = config.config_get(key)
+    assert value is None
+
+    dflt = "2023-04-07"
+    value = config.config_get(key, dflt)
+    assert value == ConfigByEnv.to_date(dflt)
+
+@pytest.mark.unit
+def test_config_getter_cleared_float(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+    config = ConfigByEnv(rule_json)
+    assert config is not None
+
+    key = "key_float_1"
+    os.environ.pop(key, None)
+
+    value = config.config_get(key)
+    assert value == 0.0
+
+    dflt = 9.0
+    value = config.config_get(key, dflt)
+    assert value == dflt
+
+@pytest.mark.unit
+def test_config_getter_date_outrng_high(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+
+    key = "key_date_1"
+    os.environ[key] ="2035-12-31"
+
+    with pytest.raises(ValueError):
+        _ = ConfigByEnv(rule_json)
+
+@pytest.mark.unit
+def test_config_getter_date_outrng_low(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+
+    key = "key_date_1"
+    os.environ[key] ="1901-12-31"
+
+    with pytest.raises(ValueError):
+        _ = ConfigByEnv(rule_json)
+
+@pytest.mark.unit
+def test_config_getter_int_outrng_high(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+
+    key = "key_int_1"
+    os.environ[key] ="99999"
+
+    with pytest.raises(ValueError):
+        _ = ConfigByEnv(rule_json)
+
+@pytest.mark.unit
+def test_config_getter_int_outrng_low(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+
+    key = "key_int_1"
+    os.environ[key] ="-9"
+
+    with pytest.raises(ValueError):
+        _ = ConfigByEnv(rule_json)
+
+@pytest.mark.unit
+def test_config_getter_float_outrng_high(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+
+    key = "key_float_1"
+    os.environ[key] ="99999"
+
+    with pytest.raises(ValueError):
+        _ = ConfigByEnv(rule_json)
+
+@pytest.mark.unit
+def test_config_getter_float_outrng_low(rule_json):
+    key_list = make_env_vars(rule_json)
+    assert key_list is not None
+
+    key = "key_float_1"
+    os.environ[key] ="-9"
+
+    with pytest.raises(ValueError):
+        _ = ConfigByEnv(rule_json)
