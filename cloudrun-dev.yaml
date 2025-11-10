@@ -6,13 +6,18 @@ spec:
   template:
     spec:
       containers:
-      - image: gcr.io/PROJECT_ID/agent2agent
-        ports:
-        - containerPort: 8080
-        env:
-        - name: ENV_STAGE
-          value: "dev"
-      serviceAccountName: github-deployer@PROJECT_ID.iam.gserviceaccount.com
+        - image: gcr.io/YOUR_PROJECT_ID/agent2agent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENV_STAGE
+              value: "dev"
+            - name: AGENT_API_KEY_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: AGENT_API_KEY_DEV
+                  key: latest
+      serviceAccountName: github-deployer@YOUR_PROJECT_ID.iam.gserviceaccount.com
   traffic:
-  - latestRevision: true
-    percent: 100
+    - latestRevision: true
+      percent: 100
