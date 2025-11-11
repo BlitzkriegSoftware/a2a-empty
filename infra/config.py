@@ -4,12 +4,14 @@
 # Config validation
 
 
-import os
 import logging
+import os
+
 
 def get_env_stage():
     """Returns the current environment stage: dev or prod (default: dev)."""
     return os.getenv("ENV_STAGE", "dev")
+
 
 def get_config():
     """Returns environment-specific configuration dictionary."""
@@ -30,12 +32,14 @@ def get_config():
             "debug_mode": True,
         }
 
+
 def validate_config(config):
     """Ensures required keys are present and not empty."""
     required_keys = ["agent_api_key"]
     for key in required_keys:
         if not config.get(key):
             raise ValueError(f"Missing required config: {key}")
+
 
 def setup_logging(log_level):
     """Configures logging based on environment."""
