@@ -38,85 +38,73 @@ This the folder structure of the project, currently good, bad, and evil module s
 independently from one another.
 
 A2A-EMPTY/
-├── infra/ # Deployment & infrastructure
+├── .venv/ # your virtual environment (where uv is installed)
+│
+├── infra/ # deployment configs
 │ ├── Dockerfile
 │ ├── cloudrun-dev.yaml
 │ ├── cloudrun-prod.yaml
 │ └── README.md
 │
-├── common/ # Shared protocol / transport / utilities
+├── common/ # shared protocol / transport / utils
 │ ├── **init**.py
 │ ├── protocol.py
 │ ├── transport.py
-│ ├── message_envelope.py
 │ ├── registry.py
 │ └── logger.py
 │
 ├── src/
+│ ├── **init**.py # ✅ makes src a package so `python -m src.main` works
+│ │
+│ ├── main.py # ✅ global launcher for all agents
+│ │
 │ ├── good/
 │ │ ├── **init**.py
-│ │ ├── main.py # FastAPI entrypoint (uvicorn src.good.main:app)
 │ │ ├── a2a_server/
 │ │ │ ├── **init**.py
+│ │ │ ├── main.py # ✅ actual FastAPI app for GOOD agent
 │ │ │ ├── agent_executor.py
-│ │ │ ├── protocol_handler.py
-│ │ │ └── router.py
+│ │ │ └── ...
 │ │ ├── config/
 │ │ │ ├── **init**.py
-│ │ │ ├── settings.py
-│ │ │ └── good.env.yaml
-│ │ └── tests/ # Unit tests for GOOD agent
+│ │ │ └── settings.py
+│ │ └── tests/
 │ │ ├── **init**.py
 │ │ ├── test_executor.py
-│ │ ├── test_router.py
-│ │ └── test_config.py
+│ │ └── test_router.py
 │ │
 │ ├── bad/
 │ │ ├── **init**.py
-│ │ ├── main.py
 │ │ ├── a2a_server/
 │ │ │ ├── **init**.py
+│ │ │ ├── main.py
 │ │ │ ├── agent_executor.py
-│ │ │ ├── protocol_handler.py
-│ │ │ └── router.py
+│ │ │ └── ...
 │ │ ├── config/
 │ │ │ ├── **init**.py
-│ │ │ ├── settings.py
-│ │ │ └── bad.env.yaml
-│ │ └── tests/ # Unit tests for BAD agent
+│ │ │ └── settings.py
+│ │ └── tests/
 │ │ ├── **init**.py
 │ │ ├── test_executor.py
-│ │ ├── test_router.py
-│ │ └── test_config.py
+│ │ └── test_router.py
 │ │
-│ ├── evil/
-│ │ ├── **init**.py
-│ │ ├── main.py
-│ │ ├── a2a_server/
-│ │ │ ├── **init**.py
-│ │ │ ├── agent_executor.py
-│ │ │ ├── protocol_handler.py
-│ │ │ └── router.py
-│ │ ├── config/
-│ │ │ ├── **init**.py
-│ │ │ ├── settings.py
-│ │ │ └── evil.env.yaml
-│ │ └── tests/ # Unit tests for EVIL agent
-│ │ ├── **init**.py
-│ │ ├── test_executor.py
-│ │ ├── test_router.py
-│ │ └── test_config.py
-│ │
-│ └── tests/ # Cross-agent / integration tests (optional, no need if no cross-agent interaction)
+│ └── evil/
 │ ├── **init**.py
-│ ├── test_protocol_consistency.py # verifies shared protocol
-│ ├── test_agent_communication.py # simulates GOOD <-> BAD <-> EVIL interaction
-│ └── test_end_to_end_flow.py # full conversation test
+│ ├── a2a_server/
+│ │ ├── **init**.py
+│ │ ├── main.py
+│ │ ├── agent_executor.py
+│ │ └── ...
+│ ├── config/
+│ │ ├── **init**.py
+│ │ └── settings.py
+│ └── tests/
+│ ├── **init**.py
+│ ├── test_executor.py
+│ └── test_router.py
 │
-├── pyproject.toml
+├── pyproject.toml # ✅ uv configuration, declares src/ as code root
 ├── uv.lock
-├── .pre-commit-config.yaml
-├── .python-version
 ├── .gitignore
-├── LICENSE
-└── README.md
+├── README.md
+└── LICENSE
