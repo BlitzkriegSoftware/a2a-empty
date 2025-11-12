@@ -39,16 +39,16 @@ RUN uv venv && \
     uv sync --all-groups && \
     uv sync --upgrade
 
-# Expose port 10003 so Docker knows which port the container serves traffic on
+# Expose port 8080 so Docker knows which port the container serves traffic on
 # Note: Port — just documents it for a test purpose. we will add the actual port 
 
-EXPOSE 10003
+EXPOSE 8080
 
 # -----------------------------------------------------------------------------
 # Default command to run the server when container starts. needs to modify
 # - `uv run`: Executes the command inside the activated virtual environment. will remove this step and document it in readme. just for our understanding
 # - `-m good.a2a-server`: Runs the module `good.a2a-server/.py`
 # - `--host 0.0.0.0`: Binds to all network interfaces (needed for Docker/GCP). this is for test. will be changed
-# - `--port 10003`: Runs the service on port 10003. this is for test. will be changed
+# - `--port 8080`: Runs the service on port 8080. this is for test. will be changed
 # -----------------------------------------------------------------------------
-CMD ["uv", "run", "python3", "-m", "good.a2a-server", "--host", "0.0.0.0", "--port", "10003"]
+CMD ["uv", "run", "python3", "-m", "good.a2a-server", "--host", "0.0.0.0", "--port", "8080"]
