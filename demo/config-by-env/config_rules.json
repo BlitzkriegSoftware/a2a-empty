@@ -1,0 +1,47 @@
+[
+  {
+    "name": "key_str_1",
+    "type": "str",
+    "required": true,
+    "regex": "([a-z][A-Z][0-9]-_.)*",
+    "min": "",
+    "max": "",
+    "default": ""
+  },
+  {
+    "name": "key_str_2",
+    "type": "str",
+    "required": true,
+    "regex": "([a-z][A-Z][0-9]-_.)*",
+    "min": "",
+    "max": "",
+    "default": "wow"
+  },
+  {
+    "name": "key_int_1",
+    "type": "int",
+    "required": true,
+    "regex": "",
+    "min": "1",
+    "max": "99",
+    "default": ""
+  },
+  {
+    "name": "key_float_1",
+    "type": "float",
+    "required": false,
+    "regex": "",
+    "min": "0",
+    "max": "999",
+    "default": "400"
+  },
+  {
+    "name": "key_date_1",
+    "type": "date",
+    "required": false,
+    "regex": "\\d{4}-\\d{2}-\\d{2}",
+    "min": "2001-01-01",
+    "max": "2030-12-31",
+    "default": "2025-01-01"
+  }
+]
