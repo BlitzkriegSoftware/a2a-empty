@@ -24,6 +24,12 @@ hooks = ["pre-commit>=0"]
 typecheck = ["pyright>=0"]
 dev = ["ruff>=0", "black>=0", "isort>=0", "pytest>=0", "pre-commit>=0", "pyright>=0"]
 
+[tool.setuptools]
+package-dir = {""="src"}
+
+[tool.setuptools.package.find]
+where=["src"]
+
 [tool.black]
 line-length = 88
 target-version = ["py311"]
@@ -39,7 +45,6 @@ include_trailing_comma = true
 line-length = 88
 target-version = "py311"
 fix = true
-
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
