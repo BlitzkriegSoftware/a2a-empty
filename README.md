@@ -37,73 +37,73 @@ This is a set of "Hello World" A2A Wrappers used for testing
 This the folder structure of the project, currently good, bad, and evil module should run
 independently from one another.
 
+```text
 A2A-EMPTY/
-├── .venv/ # your virtual environment (where uv is installed)
+├── .venv/                  # your virtual environment (where uv is installed)
 │
-├── infra/ # deployment configs
-│ ├── Dockerfile
-│ ├── cloudrun-dev.yaml
-│ ├── cloudrun-prod.yaml
-│ └── README.md
+├── infra/                  # deployment configs
+│   ├── Dockerfile
+│   ├── cloudrun-dev.yaml
+│   ├── cloudrun-prod.yaml
+│   └── README.md
 │
-├── common/ # shared protocol / transport / utils
-│ ├── **init**.py
-│ ├── protocol.py
-│ ├── transport.py
-│ ├── registry.py
-│ └── logger.py
+├── common/                 # shared protocol / transport / utils
+│   ├── __init__.py
+│   ├── protocol.py
+│   ├── transport.py
+│   ├── registry.py
+│   └── logger.py
 │
 ├── src/
-│ ├── **init**.py # ✅ makes src a package so `python -m src.main` works
-│ │
-│ ├── main.py # ✅ global launcher for all agents
-│ │
-│ ├── good/
-│ │ ├── **init**.py
-│ │ ├── a2a_server/
-│ │ │ ├── **init**.py
-│ │ │ ├── main.py # ✅ actual FastAPI app for GOOD agent
-│ │ │ ├── agent_executor.py
-│ │ │ └── ...
-│ │ ├── config/
-│ │ │ ├── **init**.py
-│ │ │ └── settings.py
-│ │ └── tests/
-│ │ ├── **init**.py
-│ │ ├── test_executor.py
-│ │ └── test_router.py
-│ │
-│ ├── bad/
-│ │ ├── **init**.py
-│ │ ├── a2a_server/
-│ │ │ ├── **init**.py
-│ │ │ ├── main.py
-│ │ │ ├── agent_executor.py
-│ │ │ └── ...
-│ │ ├── config/
-│ │ │ ├── **init**.py
-│ │ │ └── settings.py
-│ │ └── tests/
-│ │ ├── **init**.py
-│ │ ├── test_executor.py
-│ │ └── test_router.py
-│ │
-│ └── evil/
-│ ├── **init**.py
-│ ├── a2a_server/
-│ │ ├── **init**.py
-│ │ ├── main.py
-│ │ ├── agent_executor.py
-│ │ └── ...
-│ ├── config/
-│ │ ├── **init**.py
-│ │ └── settings.py
-│ └── tests/
-│ ├── **init**.py
-│ ├── test_executor.py
-│ └── test_router.py
+│   ├── __init__.py         # ✅ makes src a package so `python -m src.main` works
+│   ├── main.py             # ✅ global launcher for all agents
+│   │
+│   ├── good/
+│   │   ├── __init__.py
+│   │   ├── a2a_server/
+│   │   │   ├── __init__.py
+│   │   │   ├── main.py     # ✅ actual FastAPI app for GOOD agent
+│   │   │   ├── agent_executor.py
+│   │   │   └── ...
+│   │   ├── config/
+│   │   │   ├── __init__.py
+│   │   │   └── settings.py
+│   │   └── tests/
+│   │       ├── __init__.py
+│   │       ├── test_executor.py
+│   │       └── test_router.py
+│   │
+│   ├── bad/
+│   │   ├── __init__.py
+│   │   ├── a2a_server/
+│   │   │   ├── __init__.py
+│   │   │   ├── main.py
+│   │   │   ├── agent_executor.py
+│   │   │   └── ...
+│   │   ├── config/
+│   │   │   ├── __init__.py
+│   │   │   └── settings.py
+│   │   └── tests/
+│   │       ├── __init__.py
+│   │       ├── test_executor.py
+│   │       └── test_router.py
+│   │
+│   └── evil/
+│       ├── __init__.py
+│       ├── a2a_server/
+│       │   ├── __init__.py
+│       │   ├── main.py
+│       │   ├── agent_executor.py
+│       │   └── ...
+│       ├── config/
+│       │   ├── __init__.py
+│       │   └── settings.py
+│       └── tests/
+│           ├── __init__.py
+│           ├── test_executor.py
+│           └── test_router.py
 │
-├── pyproject.toml # ✅ uv configuration, declares src/ as code root
+├── pyproject.toml          # ✅ uv configuration, declares src/ as code root
 ├── uv.lock
 ├── .gitignore
 ├── README.md
