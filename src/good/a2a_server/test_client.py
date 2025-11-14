@@ -1,10 +1,10 @@
 import asyncio
 import uuid
+from typing import List, cast
 
 import httpx
 from a2a.client import A2ACardResolver, A2AClient
 from a2a.types import (
-    AgentCard,
     Message,
     MessageSendParams,
     Part,
@@ -14,58 +14,76 @@ from a2a.types import (
 )
 
 from src.common.error_handler import BaseErrorHandler
+from src.common.logging import setup_logger
 
-PUBLIC_AGENT_CARD_PATH = "/.well-known/a2a-agent-card.json"
 BASE_URL = "http://localhost:9999"
+AGENT_CARD_PATH = "/.well-known/agent.json"
 
-error_handler = BaseErrorHandler(component_name="GoodAgentClient", exit_on_error=True)
+logger = setup_logger("GoodAgentClient")
+error_handler = BaseErrorHandler(
+    component_name="GoodAgentClient",
+    exit_on_error=True,
+)
 
 
-async def _run_client() -> None:
+async def run_client() -> None:
+    """Async client that calls the GOOD agent using the A2A protocol."""
+
+    logger.info(f"Connecting to {BASE_URL} ...")
+
     async with httpx.AsyncClient() as httpx_client:
-        # Initialize A2ACardResolver
+        # ---------------------------------------------------------
+        # 1. Fetch agent card
+        # ---------------------------------------------------------
+        logger.info("Fetching agent card...")
+
         resolver = A2ACardResolver(httpx_client=httpx_client, base_url=BASE_URL)
 
-        final_agent_card_to_use: AgentCard | None = None
+        agent_card = await resolver.get_agent_card(AGENT_CARD_PATH)
+        logger.info("Agent card fetched successfully.")
 
-        try:
-            print(f"Fetching agent card from {BASE_URL}{PUBLIC_AGENT_CARD_PATH}")
-            _public_card = await resolver.get_agent_card()
-            print("Fetched public agent card successfully.")
-            print(_public_card.model_dump_json(indent=2))
-
-            final_agent_card_to_use = _public_card
-
-        except Exception as e:
-            print(f"Error fetching agent card: {e}")
-            raise RuntimeError("Failed to fetch agent card")
-
+        # ---------------------------------------------------------
+        # 2. Initialize A2A client
+        # ---------------------------------------------------------
         client = A2AClient(
-            httpx_client=httpx_client, agent_card=final_agent_card_to_use
+            httpx_client=httpx_client,
+            agent_card=agent_card,
         )
-        print("A2AClient initialized successfully.")
+        logger.info("Client initialized successfully.")
 
-        message_payload = Message(
+        # ---------------------------------------------------------
+        # 3. Build A2A message request
+        # ---------------------------------------------------------
+        part: Part = cast(Part, TextPart(text="Hello, how are you?"))
+        parts: List[Part] = [part]
+
+        message = Message(
             role=Role.user,
             message_id=str(uuid.uuid4()),
-            parts=[Part(root=TextPart(text="Hello, how are you?"))],
+            parts=parts,
         )
+
         request = SendMessageRequest(
             id=str(uuid.uuid4()),
-            params=MessageSendParams(
-                message=message_payload,
-            ),
+            params=MessageSendParams(message=message),
         )
-        print("Sending message...")
 
+        logger.info("Sending message to agent...")
+
+        # ---------------------------------------------------------
+        # 4. Send the message
+        # ---------------------------------------------------------
         response = await client.send_message(request)
-        print("Response:")
+
+        # ---------------------------------------------------------
+        # 5. Print response
+        # ---------------------------------------------------------
+        logger.info("Response received:")
         print(response.model_dump_json(indent=2))
 
 
 async def main() -> None:
-    """Entry point with centralized error handling."""
-    await error_handler.handle_async(_run_client)
+    await error_handler.handle_async(run_client)
 
 
 if __name__ == "__main__":

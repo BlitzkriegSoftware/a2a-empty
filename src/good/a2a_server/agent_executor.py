@@ -4,6 +4,7 @@ from a2a.utils import new_agent_text_message
 from pydantic import BaseModel
 
 from src.common.error_handler import BaseErrorHandler
+from src.common.logging import setup_logger
 
 
 class GreetingAgent(BaseModel):
@@ -19,14 +20,16 @@ class GreetingAgentExecutor(AgentExecutor):
         self.agent = GreetingAgent()
         self.error_handler = BaseErrorHandler(
             component_name="GoodAgentExecutor",
-            exit_on_error=False,  # don't kill the server on executor error
+            exit_on_error=False,
         )
+        self.log_handler = setup_logger("GoodAgentExecutor")
 
     async def execute(self, context: RequestContext, event_queue: EventQueue):
         """Safe execution wrapper."""
 
         async def _run():
             result = await self.agent.invoke()
+            self.log_handler.info(f"Agent result: {result}")
             await event_queue.enqueue_event(new_agent_text_message(result))
 
         # use ASYNC handler here

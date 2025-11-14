@@ -5,10 +5,12 @@ from a2a.server.tasks import InMemoryTaskStore
 from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 
 from src.common.error_handler import BaseErrorHandler
+from src.common.logging import setup_logger
 
 from .agent_executor import GreetingAgentExecutor
 
 error_handler = BaseErrorHandler(component_name="GoodAgent", exit_on_error=True)
+log_handler = setup_logger("GoodAgent")
 
 
 def start_server() -> None:
@@ -43,14 +45,12 @@ def start_server() -> None:
         agent_card=agent_card,
     )
 
-    # ⬇️ This blocks and keeps the process alive
     uvicorn.run(server.build(), host="0.0.0.0", port=9999)
 
 
 def main() -> None:
     """Entry point for the Good agent with sync error handling."""
-    print("[GoodAgent] Starting server...")
-    # ⬇️ use SYNC handler; no asyncio.run here
+    log_handler.info("[GoodAgent] Starting server...")
     error_handler.handle(start_server)
 
 

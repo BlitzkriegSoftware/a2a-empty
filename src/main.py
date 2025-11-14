@@ -15,6 +15,7 @@
 import os
 
 from src.common.error_handler import BaseErrorHandler
+from src.common.logging import setup_logger
 
 
 def run_good() -> None:
@@ -37,9 +38,10 @@ def run_evil() -> None:
 
 def main() -> None:
     agent = os.getenv("A2A_AGENT", "good").lower()
-    handler = BaseErrorHandler(component_name="A2ALauncher", exit_on_error=True)
+    error_handler = BaseErrorHandler(component_name="A2ALauncher", exit_on_error=True)
+    log_handler = setup_logger("A2ALauncher")
 
-    print(f"[A2A Launcher] Starting agent: {agent}")
+    log_handler.info(f"[A2A Launcher] Starting agent: {agent}")
 
     def _start():
         if agent == "good":
@@ -51,10 +53,10 @@ def main() -> None:
         else:
             raise ValueError(f"Unknown agent '{agent}'. Use one of: good, bad, evil.")
 
-    handler.handle(_start)
+    error_handler.handle(_start)
 
     # If we ever return here, the agent was stopped manually
-    print(f"[A2A Launcher] Agent '{agent}' stopped normally.")
+    log_handler.info(f"[A2A Launcher] Agent '{agent}' stopped normally.")
 
 
 if __name__ == "__main__":
