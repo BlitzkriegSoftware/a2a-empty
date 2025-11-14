@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 
 import httpx
@@ -12,11 +13,15 @@ from a2a.types import (
     TextPart,
 )
 
+from src.common.error_handler import BaseErrorHandler
+
 PUBLIC_AGENT_CARD_PATH = "/.well-known/a2a-agent-card.json"
 BASE_URL = "http://localhost:9999"
 
+error_handler = BaseErrorHandler(component_name="GoodAgentClient", exit_on_error=True)
 
-async def main() -> None:
+
+async def _run_client() -> None:
     async with httpx.AsyncClient() as httpx_client:
         # Initialize A2ACardResolver
         resolver = A2ACardResolver(httpx_client=httpx_client, base_url=BASE_URL)
@@ -58,7 +63,10 @@ async def main() -> None:
         print(response.model_dump_json(indent=2))
 
 
-if __name__ == "__main__":
-    import asyncio
+async def main() -> None:
+    """Entry point with centralized error handling."""
+    await error_handler.handle_async(_run_client)
 
+
+if __name__ == "__main__":
     asyncio.run(main())
