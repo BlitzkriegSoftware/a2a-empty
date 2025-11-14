@@ -5,18 +5,31 @@ from pathlib import Path
 
 def setup_logger(component: str, log_level: str = "INFO") -> logging.Logger:
     """
-    Creates a reusable logger for any component (good, bad, evil).
+    Create or return a reusable logger for any component (good, bad, evil).
+    Writes:
+      - all logs to logs/<component>.log
+      - errors only to logs/error/<component>.error.log
+      - also logs to console
     """
 
     logger = logging.getLogger(component)
     logger.setLevel(log_level.upper())
+    logger.propagate = False  # don't duplicate logs to root logger
 
-    # Prevent duplicate handlers if logger is already configured
+    # If already configured, just return it
     if logger.handlers:
         return logger
 
     # -----------------------------
-    # Format
+    # Paths
+    # -----------------------------
+    log_dir = Path("logs")
+    error_dir = log_dir / "error"
+    log_dir.mkdir(exist_ok=True)
+    error_dir.mkdir(parents=True, exist_ok=True)
+
+    # -----------------------------
+    # Formatter
     # -----------------------------
     formatter = logging.Formatter(
         fmt="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
@@ -26,24 +39,34 @@ def setup_logger(component: str, log_level: str = "INFO") -> logging.Logger:
     # -----------------------------
     # Console handler
     # -----------------------------
-    console = logging.StreamHandler()
-    console.setFormatter(formatter)
-    logger.addHandler(console)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
     # -----------------------------
-    # File handler (rotating)
-    # logs/<component>.log
+    # Main log file (all levels)
     # -----------------------------
-    log_dir = Path("logs")
-    log_dir.mkdir(exist_ok=True)
-
     file_handler = RotatingFileHandler(
         filename=log_dir / f"{component}.log",
         maxBytes=5_000_000,  # 5 MB
-        backupCount=3,  # keep 3 old log files
+        backupCount=3,
         encoding="utf-8",
     )
+    file_handler.setLevel(log_level.upper())
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+
+    # -----------------------------
+    # Error-only log file
+    # -----------------------------
+    error_file_handler = RotatingFileHandler(
+        filename=error_dir / f"{component}.error.log",
+        maxBytes=5_000_000,
+        backupCount=3,
+        encoding="utf-8",
+    )
+    error_file_handler.setLevel(logging.ERROR)
+    error_file_handler.setFormatter(formatter)
+    logger.addHandler(error_file_handler)
 
     return logger

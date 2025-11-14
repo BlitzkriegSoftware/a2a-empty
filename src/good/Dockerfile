@@ -34,10 +34,10 @@ ENV PATH="/root/.local/bin:$PATH"
 
 COPY src/good/a2a-server/ /app
 
-RUN uv venv && \
-    source .venv/bin/activate && \
-    uv sync --all-groups && \
-    uv sync --upgrade
+# RUN uv venv && \
+#     source .venv/bin/activate && \
+#     uv sync --all-groups && \
+#     uv sync --upgrade
 
 # Expose port 8080 so Docker knows which port the container serves traffic on
 # Note: Port — just documents it for a test purpose. we will add the actual port 

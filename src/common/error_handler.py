@@ -1,11 +1,18 @@
 import inspect
+import logging
 import sys
 import traceback
 from typing import Any, Callable, Optional
 
 
 class BaseErrorHandler:
-    """Reusable error handling utility for A2A components."""
+    """
+    Reusable error handling utility for A2A components.
+
+    - handle()      -> for synchronous functions
+    - handle_async() -> for asynchronous functions
+    - logs errors via logging.getLogger(component_name)
+    """
 
     def __init__(
         self, component_name: str = "A2AComponent", exit_on_error: bool = True
@@ -38,7 +45,7 @@ class BaseErrorHandler:
     async def handle_async(
         self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> Optional[Any]:
-        """Handle errors for asynchronous functions (or sync if passed)."""
+        """Handle errors for asynchronous (or sync) functions."""
         try:
             if inspect.iscoroutinefunction(func):
                 return await func(*args, **kwargs)
@@ -59,7 +66,15 @@ class BaseErrorHandler:
     # ---------- internals ----------
 
     def _log_error(self, error_type: str, message: str) -> None:
-        print(f"[{self.component_name}:{error_type}] {message}")
+        """Log error through the component logger; fallback to print if not configured."""
+        logger = logging.getLogger(self.component_name)
+        full_message = f"[{error_type}] {message}"
+
+        if logger.handlers:
+            logger.error(full_message)
+        else:
+            # fallback if logger wasn't set up
+            print(f"[{self.component_name}:{error_type}] {message}")
 
     def _print_trace(self) -> None:
         traceback.print_exc()
