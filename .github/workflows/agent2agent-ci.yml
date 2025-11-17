@@ -45,8 +45,8 @@ jobs:
     - name: Build Docker image (no push)
       uses: docker/build-push-action@v5
       with:
-        context: src/good
-        file: src/good/Dockerfile
+        context: .
+        file: docker/Dockerfile.good
         push: false
         tags: |
           agent2agent:${{ env.BRANCH_NAME }}
