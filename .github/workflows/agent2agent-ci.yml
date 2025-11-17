@@ -44,6 +44,8 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+      with:
+        driver: docker-container
 
     - name: Build Docker image (no push)
       uses: docker/build-push-action@v5
@@ -51,6 +53,7 @@ jobs:
         context: .
         file: docker/Dockerfile.good
         push: false
+        load: true
         tags: |
           agent2agent:${{ env.BRANCH_NAME }}
           agent2agent:${{ env.GIT_SHA }}
