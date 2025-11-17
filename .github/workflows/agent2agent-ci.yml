@@ -49,8 +49,8 @@ jobs:
       with:
         context: .
         file: docker/Dockerfile.good
+        load: true        
         push: false
-        load: true
         tags: |
           agent2agent:${{ env.BRANCH_NAME }}
           agent2agent:${{ env.GIT_SHA }}
