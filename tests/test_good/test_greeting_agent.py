@@ -1,6 +1,6 @@
 import asyncio
 
-from ..a2a_server.agent_executor import GreetingAgent
+from src.good.a2a_server.agent_executor import GreetingAgent
 
 
 def test_greeting_agent_invokes_correctly():

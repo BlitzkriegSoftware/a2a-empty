@@ -5,7 +5,7 @@ from a2a.server.tasks import InMemoryTaskStore
 from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from starlette.testclient import TestClient
 
-from ..a2a_server.agent_executor import GreetingAgentExecutor
+from ...src.good.a2a_server.agent_executor import GreetingAgentExecutor
 
 
 @pytest.fixture

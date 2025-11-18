@@ -1,82 +1,122 @@
+from __future__ import annotations
+
 import inspect
 import logging
 import sys
 import traceback
-from typing import Any, Callable, Optional
+from typing import Awaitable, Callable, Optional, ParamSpec, TypeVar, overload
+
+P = ParamSpec("P")
+T = TypeVar("T")
 
 
 class BaseErrorHandler:
     """
     Reusable error handling utility for A2A components.
-
-    - handle()      -> for synchronous functions
-    - handle_async() -> for asynchronous functions
-    - logs errors via logging.getLogger(component_name)
+    Provides:
+    - handle():     runs synchronous callables and handles exceptions.
+    - handle_async(): runs async or sync callables and handles exceptions.
+    - structured logging via component-specific loggers.
     """
 
     def __init__(
-        self, component_name: str = "A2AComponent", exit_on_error: bool = True
-    ):
+        self,
+        component_name: str,
+        *,
+        exit_on_error: bool = True,
+        trace_printer: Callable[[], None] | None = None,
+    ) -> None:
         self.component_name = component_name
         self.exit_on_error = exit_on_error
+        self._logger = logging.getLogger(component_name)
+        self._trace_printer = trace_printer or self._default_trace_printer
 
-    # ---------- SYNC handler (for launcher, server startup) ----------
+    # ======================================================================
+    # SYNC HANDLER
+    # ======================================================================
 
     def handle(
-        self, func: Callable[..., Any], *args: Any, **kwargs: Any
-    ) -> Optional[Any]:
-        """Handle errors for synchronous functions."""
+        self,
+        func: Callable[P, T],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Optional[T]:
+        """Execute a synchronous callable and handle any exceptions."""
         try:
             return func(*args, **kwargs)
-        except ImportError as e:
-            self._log_error("ImportError", f"Missing dependency or bad import: {e}")
-            self._print_trace()
-            self._exit(2)
-        except ValueError as e:
-            self._log_error("ValueError", str(e))
-            self._exit(3)
-        except Exception as e:
-            self._log_error("UnexpectedError", f"{type(e).__name__}: {e}")
-            self._print_trace()
-            self._exit(1)
+        except ImportError as exc:
+            self._log_error("ImportError", f"Missing dependency or bad import: {exc}")
+        except ValueError as exc:
+            self._log_error("ValueError", str(exc))
+        except Exception as exc:  # noqa: BLE001
+            self._log_error("UnexpectedError", f"{type(exc).__name__}: {exc}")
 
-    # ---------- ASYNC handler (for executors, async clients) ----------
+        self._trace_printer()
+        self._exit(1)
+        return None
+
+    # ======================================================================
+    # ASYNC HANDLER (supports async & sync callables)
+    # ======================================================================
+
+    @overload
+    async def handle_async(
+        self,
+        func: Callable[P, T],  # sync function
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Optional[T]: ...
+
+    @overload
+    async def handle_async(
+        self,
+        func: Callable[P, "Awaitable[T]"],  # async function
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Optional[T]: ...
 
     async def handle_async(
-        self, func: Callable[..., Any], *args: Any, **kwargs: Any
-    ) -> Optional[Any]:
-        """Handle errors for asynchronous (or sync) functions."""
+        self,
+        func: Callable[P, T] | Callable[P, "Awaitable[T]"],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Optional[T]:
+        """Execute an async or sync callable and handle exceptions."""
         try:
+            # async callable case
             if inspect.iscoroutinefunction(func):
-                return await func(*args, **kwargs)
-            else:
-                return func(*args, **kwargs)
-        except ImportError as e:
-            self._log_error("ImportError", f"Missing dependency or bad import: {e}")
-            self._print_trace()
-            self._exit(2)
-        except ValueError as e:
-            self._log_error("ValueError", str(e))
-            self._exit(3)
-        except Exception as e:
-            self._log_error("UnexpectedError", f"{type(e).__name__}: {e}")
-            self._print_trace()
-            self._exit(1)
+                result = await func(*args, **kwargs)
+                return result
 
-    # ---------- internals ----------
+            # sync callable case
+            result = func(*args, **kwargs)
+            return result  # type: ignore
+
+        except ImportError as exc:
+            self._log_error("ImportError", f"Missing dependency or bad import: {exc}")
+        except ValueError as exc:
+            self._log_error("ValueError", str(exc))
+        except Exception as exc:  # noqa: BLE001
+            self._log_error("UnexpectedError", f"{type(exc).__name__}: {exc}")
+
+        self._trace_printer()
+        self._exit(1)
+        return None
+
+    # ======================================================================
+    # INTERNAL HELPERS
+    # ======================================================================
 
     def _log_error(self, error_type: str, message: str) -> None:
-        """Log error through the component logger; fallback to print if not configured."""
-        logger = logging.getLogger(self.component_name)
+        """Log the error using the component logger with a consistent prefix."""
         full_message = f"[{error_type}] {message}"
-
-        if logger.handlers:
-            logger.error(full_message)
+        if self._logger.handlers:
+            self._logger.error(full_message)
         else:
-            # fallback if logger wasn't set up
-            print(f"[{self.component_name}:{error_type}] {message}")
+            # fallback when logger not configured
+            print(f"[{self.component_name}] {full_message}")
 
-    def _print_trace(self) -> None:
+    def _default_trace_printer(self) -> None:
         traceback.print_exc()
 
     def _exit(self, code: int) -> None:
