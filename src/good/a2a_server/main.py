@@ -4,14 +4,22 @@ from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
 from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 
+from src.common.error_handler import BaseErrorHandler
+from src.common.logging import setup_logger
+
 from .agent_executor import GreetingAgentExecutor
 
+error_handler = BaseErrorHandler(component_name="GoodAgent", exit_on_error=True)
+log_handler = setup_logger("GoodAgent")
 
-def main():
+
+def start_server() -> None:
+    """Create and run the Greeting Agent server."""
+
     skill = AgentSkill(
         id="hello_world",
         name="Greet",
-        description="Returns a greeting",
+        description="Returns a greeting.",
         tags=["greeting", "hello", "world"],
         examples=["Hey", "Hello", "Hi"],
     )
@@ -38,6 +46,12 @@ def main():
     )
 
     uvicorn.run(server.build(), host="0.0.0.0", port=9999)
+
+
+def main() -> None:
+    """Entry point for the Good agent with sync error handling."""
+    log_handler.info("[GoodAgent] Starting server...")
+    error_handler.handle(start_server)
 
 
 if __name__ == "__main__":
