@@ -37,7 +37,4 @@ jobs:
         file: docker/Dockerfile.good
         push: true
         tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/agent2agent:${{ env.BRANCH_NAME }}
-          ${{ secrets.DOCKERHUB_USERNAME }}/agent2agent:${{ env.GIT_SHA }}
-          ${{ secrets.DOCKERHUB_USERNAME }}/agent2agent:${{ env.BRANCH_NAME }}-${{ env.GIT_SHA }}
           ${{ secrets.DOCKERHUB_USERNAME }}/agent2agent:${{ env.BRANCH_NAME }}-${{ env.BUILD_DATE }}
