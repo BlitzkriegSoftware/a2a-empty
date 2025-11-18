@@ -4,13 +4,13 @@
 ## 2. Run the Agent
 Open a terminal and run the server with the dummy agent:
 
-`uv run .`
+`uv run python -m src.main server --agent good`
 
 The agent will be available at `http://localhost:9999`
 
 ## 3. Run the Client
 Open a new terminal and run the test client:
-cd to good/a2a_server and run:`uv run --active test_client.py`
+cd to good/a2a_server and run:`uv run python -m src.main client --agent good`
 
 ## 4. Expected output:
 showcasing the A2A protocol bare bones:
