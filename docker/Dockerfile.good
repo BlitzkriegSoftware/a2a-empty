@@ -26,7 +26,7 @@ COPY pyproject.toml uv.lock* /app/
 
 # Copy your application source files
 
-COPY src/ /app/
+COPY . /app
 
 # Ensure Python sees /app as the root for imports like good.a2a_server
 ENV PYTHONPATH="/app"
@@ -41,4 +41,4 @@ EXPOSE 8080
 
 
 # Run  server
-CMD ["uv", "run", "src/main.py", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "python", "-m", "src.main", "server", "agent", "good", "--host", "0.0.0.0", "--port", "8080"]
