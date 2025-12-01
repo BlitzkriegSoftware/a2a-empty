@@ -1,0 +1,102 @@
+name: Deploy to Cloud Run (Dev)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  IMAGE_NAME: agent2agent
+  SERVICE_NAME: agent2agent-dev
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to Dev
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: ${{ steps.deploy.outputs.url }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build with Cloud Build
+        run: |
+          # Submit build asynchronously to avoid log streaming permission issues
+          BUILD_ID=$(gcloud builds submit \
+            --config=infra/cloudbuild.yaml \
+            --substitutions=_IMAGE_NAME=${{ env.IMAGE_NAME }},_TAG=${{ github.sha }},_DOCKERFILE=docker/Dockerfile.good \
+            --async \
+            --format="value(id)")
+          
+          echo "Build ID: $BUILD_ID"
+          echo "Build URL: https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=${{ env.PROJECT_ID }}"
+          
+          # Poll for build completion
+          echo "Waiting for build to complete..."
+          for i in {1..60}; do
+            STATUS=$(gcloud builds describe $BUILD_ID --format="value(status)")
+            echo "Build status: $STATUS"
+            
+            if [ "$STATUS" = "SUCCESS" ]; then
+              echo " Build completed successfully!"
+              break
+            elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ]; then
+              echo " Build failed with status: $STATUS"
+              echo "View logs at: https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=${{ env.PROJECT_ID }}"
+              exit 1
+            fi
+            
+            sleep 10
+          done
+          
+          if [ "$STATUS" != "SUCCESS" ]; then
+            echo " Build timed out after 10 minutes"
+            exit 1
+          fi
+
+      - name: Update Cloud Run config
+        run: |
+          sed -i "s/<PROJECT_ID>/${{ env.PROJECT_ID }}/g" infra/cloudrun-dev.yaml
+          sed -i "s/:latest/:${{ github.sha }}/g" infra/cloudrun-dev.yaml
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        run: |
+          gcloud run services replace infra/cloudrun-dev.yaml --region=${{ env.REGION }}
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --region=${{ env.REGION }} --format='value(status.url)')
+          echo "url=$SERVICE_URL" >> $GITHUB_OUTPUT
+          echo "###  Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "Service URL: $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
+
+      - name: Test deployment
+        run: |
+          echo "Waiting for service to be ready..."
+          sleep 15
+          
+          echo "Testing A2A card endpoint..."
+          if curl -f -s ${{ steps.deploy.outputs.url }}/.well-known/a2a/card > /dev/null; then
+            echo " Health check passed!"
+            echo "###  Health Check Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo " Health check failed, but deployment completed"
+            echo "###  Health Check Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Please verify the service manually at: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          fi
