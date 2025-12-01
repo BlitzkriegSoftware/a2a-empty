@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2A Agent Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .response-box {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            display: none;
+            color: #667eea;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fadbd8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #d5f4e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .agent-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .skill-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 5px 5px 5px 0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 A2A Agent Tester</h1>
+            <p>Test your deployed Agent-to-Agent protocol implementation</p>
+        </div>
+
+        <div class="content">
+            <!-- Agent URL Configuration -->
+            <div class="section">
+                <h2>1. Configure Agent URL</h2>
+                <div class="input-group">
+                    <label for="agentUrl">Agent URL:</label>
+                    <input type="text" id="agentUrl" value="https://agent2agent-dev-6posiaqzqq-uc.a.run.app"
+                        placeholder="https://your-agent-url.run.app">
+                </div>
+                <button onclick="fetchAgentCard()">🔍 Fetch Agent Card</button>
+                <div class="loading" id="cardLoading">Loading agent card...</div>
+                <div class="error" id="cardError"></div>
+                <div class="success" id="cardSuccess"></div>
+                <div id="agentInfo"></div>
+            </div>
+
+            <!-- Send Message -->
+            <div class="section">
+                <h2>2. Send Message to Agent</h2>
+                <div class="input-group">
+                    <label for="messageText">Your Message:</label>
+                    <textarea id="messageText"
+                        placeholder="Type your message here... Try: 'Hello, how are you?' or 'What can you do?'">Hello, how are you?</textarea>
+                </div>
+                <button onclick="sendMessage()">📤 Send Message</button>
+                <button onclick="clearResponse()">🗑️ Clear</button>
+                <div class="loading" id="messageLoading">Sending message...</div>
+                <div class="error" id="messageError"></div>
+            </div>
+
+            <!-- Response Display -->
+            <div class="section">
+                <h2>3. Agent Response</h2>
+                <div class="response-box" id="responseBox">Response will appear here...</div>
+            </div>
+
+            <!-- Debug Section -->
+            <div class="section" style="border-top: 2px dashed #ccc; padding-top: 20px; margin-top: 40px;">
+                <h2>🛠️ Debug: Method Discovery</h2>
+                <p>If you are getting "Method not found", try testing common method names:</p>
+                <button onclick="testAllMethods()" style="background: #e67e22;">🧪 Test Common Methods</button>
+                <div id="debugOutput"
+                    style="margin-top: 15px; font-family: monospace; white-space: pre-wrap; background: #eee; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let agentCard = null;
+
+        async function fetchAgentCard() {
+            const url = document.getElementById('agentUrl').value.trim();
+            const loading = document.getElementById('cardLoading');
+            const error = document.getElementById('cardError');
+            const success = document.getElementById('cardSuccess');
+            const infoDiv = document.getElementById('agentInfo');
+
+            // Reset states
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            success.style.display = 'none';
+            infoDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${url}/.well-known/agent.json`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                agentCard = await response.json();
+
+                loading.style.display = 'none';
+                success.style.display = 'block';
+                success.textContent = ' Agent card fetched successfully!';
+
+                // Display agent info
+                let html = '<div class="agent-info">';
+                html += `<h3>📋 ${agentCard.name}</h3>`;
+                html += `<p><strong>Description:</strong> ${agentCard.description}</p>`;
+                html += `<p><strong>Version:</strong> ${agentCard.version}</p>`;
+                html += `<p><strong>Protocol Version:</strong> ${agentCard.protocolVersion}</p>`;
+
+                if (agentCard.skills && agentCard.skills.length > 0) {
+                    html += '<p><strong>Skills:</strong></p>';
+                    agentCard.skills.forEach(skill => {
+                        html += `<div class="skill-badge">${skill.name}</div>`;
+                    });
+                    html += '<br><br>';
+                    agentCard.skills.forEach(skill => {
+                        html += `<p>• <strong>${skill.name}:</strong> ${skill.description}</p>`;
+                    });
+                }
+
+                html += '</div>';
+                infoDiv.innerHTML = html;
+
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `❌ Error: ${err.message}`;
+                console.error('Error fetching agent card:', err);
+            }
+        }
+
+        async function sendMessage() {
+            const url = document.getElementById('agentUrl').value.trim();
+            const messageText = document.getElementById('messageText').value.trim();
+            const loading = document.getElementById('messageLoading');
+            const error = document.getElementById('messageError');
+            const responseBox = document.getElementById('responseBox');
+
+            if (!messageText) {
+                error.style.display = 'block';
+                error.textContent = '❌ Please enter a message';
+                return;
+            }
+
+            // Reset states
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            responseBox.textContent = 'Waiting for response...';
+
+            // Generate unique IDs
+            const requestId = `req-${Date.now()}`;
+            const messageId = `msg-${Date.now()}`;
+
+            // Build A2A message request
+            const request = {
+                jsonrpc: "2.0",
+                id: requestId,
+                method: "messages/send",
+                params: {
+                    message: {
+                        role: "user",
+                        messageId: messageId,
+                        parts: [
+                            {
+                                text: messageText
+                            }
+                        ]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(`${url}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(request)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                // Display formatted response
+                let displayText = '📨 Agent Response:\n\n';
+
+                if (data.result && data.result.message) {
+                    const message = data.result.message;
+                    if (message.parts && message.parts.length > 0) {
+                        message.parts.forEach(part => {
+                            if (part.text) {
+                                displayText += part.text + '\n';
+                            }
+                        });
+                    }
+                } else if (data.error) {
+                    displayText += `❌ Error: ${data.error.message} (Code: ${data.error.code})\n`;
+                }
+
+                displayText += '\n\n📋 Full Response:\n';
+                displayText += JSON.stringify(data, null, 2);
+
+                responseBox.textContent = displayText;
+
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `❌ Error: ${err.message}`;
+                responseBox.textContent = `Error sending message: ${err.message}`;
+                console.error('Error sending message:', err);
+            }
+        }
+
+        async function testAllMethods() {
+            const url = document.getElementById('agentUrl').value.trim();
+            const output = document.getElementById('debugOutput');
+            const methods = [
+                "tasks/send",
+                "messages/send",
+                "sendMessage",
+                "send_message",
+                "agent/send",
+                "a2a/send",
+                "tasks/create",
+                "tasks/submit",
+                "echo",
+                "ping",
+                "health",
+                "tasks/get",
+                "tasks/list"
+            ];
+
+            output.textContent = "Testing methods...\n";
+
+            for (const method of methods) {
+                output.textContent += `Testing '${method}'... `;
+
+                const request = {
+                    jsonrpc: "2.0",
+                    id: `debug-${Date.now()}`,
+                    method: method,
+                    params: {
+                        message: {
+                            role: "user",
+                            messageId: "debug-msg",
+                            parts: [{ text: "Debug" }]
+                        }
+                    }
+                };
+
+                try {
+                    const response = await fetch(`${url}/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(request)
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        if (data.error.code === -32601) {
+                            output.textContent += "❌ Not Found\n";
+                        } else {
+                            output.textContent += `✅ FOUND! (Error: ${data.error.message})\n`;
+                            console.log(`Method ${method} found but returned error:`, data);
+                        }
+                    } else {
+                        output.textContent += "✅ FOUND! (Success)\n";
+                        console.log(`Method ${method} success:`, data);
+                    }
+
+                } catch (err) {
+                    output.textContent += `⚠️ Network/Server Error: ${err.message}\n`;
+                }
+            }
+            output.textContent += "Done.";
+        }
+
+        function clearResponse() {
+            document.getElementById('responseBox').textContent = 'Response will appear here...';
+            document.getElementById('messageError').style.display = 'none';
+        }
+
+        // Auto-fetch agent card on page load
+        window.addEventListener('load', () => {
+            fetchAgentCard();
+        });
+    </script>
+</body>
+
+</html>

@@ -13,8 +13,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        ref: main
+
 
     - name: Extract Git metadata
       id: meta
@@ -32,11 +31,11 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3      
 
-    - name: Build and Push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         file: docker/Dockerfile.good
         push: true
         tags: |
+
           ${{ secrets.DOCKERHUB_USERNAME }}/agent2agent:${{ env.BRANCH_NAME }}-${{ env.BUILD_DATE }}
